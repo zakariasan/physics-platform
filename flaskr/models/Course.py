@@ -23,7 +23,7 @@ class ClassName(db.Model):
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
+    unite_name = db.Column(db.String(200), nullable=False)
     class_id = db.Column(db.Integer, db.ForeignKey(
         'className.id'), nullable=False)
     teacher_id = db.Column(

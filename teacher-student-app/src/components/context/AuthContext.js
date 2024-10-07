@@ -46,8 +46,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  const [classes, setClasses] = useState([]);
+  const getClasses = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/get_classes", {
+        withCredentials: true,
+      });
+      setClasses(res.data);
+      setUser((prev) => ({
+        ...prev,
+        classes:res.data,
+      }));
+      console.log(user)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout,getClasses, classes}}>
       {children}
     </AuthContext.Provider>
   );

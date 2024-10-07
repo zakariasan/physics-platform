@@ -6,42 +6,83 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
+
+import { AuthContext } from "../context/AuthContext";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
-import { useState } from "react";
 import axios from "axios";
+import React, { useContext, useState } from "react";
 /******************
  * CreateCourse: function to create a course.
  *
  */
+
 function CreatCourse() {
+  const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    courseName: "",
-    unite: "",
-    lessonFile: null,
-    pedaFile: null,
-    exoFile: null,
+    unite_name: "",
+    title: "",
+    className: "",
+    lesson_file: null,
+    pedagogical_file: null,
+    exercise_file: null,
   });
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevD) => ({
+      ...prevD,
+      [name]: value,
+    }));
+  };
+  // Handles class selection
+  const handleClassChange = (e) => {
+    setFormData((prevD) => ({
+      ...prevD,
+      className: e.target.value, // className now holds the selected class ID
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevD) => ({
+      ...prevD,
+      [name]: files[0],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const className = e.currentTarget.classe.value;
-    const data = { className };
-
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+  /* Check the FormData content before sending
+  console.log("FormData content before sending:");
+  for (let [key, value] of data.entries()) {
+    console.log(key, value);
+  }*/
     try {
-      const res = await axios.post("http://localhost:5000/creat_class", data, {
+      const res = await axios.post("http://localhost:5000/creat_course", data, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+      
+      console.log(res.data);
     } catch (error) {
-      console.error("Create class failed", error);
+      console.error("Create course failed", error);
     }
     handleClose();
   };
-
   return (
     <Button
       variant="outlined"
@@ -65,6 +106,7 @@ function CreatCourse() {
         onClose={handleClose}
         PaperProps={{
           component: "form",
+          onSubmit: handleSubmit,
         }}
       >
         <DialogTitle> Create Your Course </DialogTitle>
@@ -73,26 +115,45 @@ function CreatCourse() {
             autoFocus
             required
             margin="dense"
-            id="courseName"
-            name="name"
-            label="Course Name"
+            id="unite_name"
+            name="unite_name"
+            label="Unite Name"
             type="text"
             fullWidth
             variant="standard"
+            onChange={handleInputChange}
           />
 
           <TextField
             autoFocus
             required
             margin="dense"
-            id="unite"
-            name="unite"
-            label="Unite"
+            id="title"
+            name="title"
+            label="title of the lesson"
             type="text"
             fullWidth
             variant="standard"
+            onChange={handleInputChange}
           />
+          <InputLabel id="className">Class Name</InputLabel>
 
+          <Select
+            id="class_Name"
+            label="Class Name"
+            focused
+            value={formData.className}
+            required
+            variant="standard"
+            fullWidth
+            onChange={handleClassChange}
+          >
+            {user?.classes?.map((item) => (
+              <MenuItem key={item.id} value={item.id}>
+                {item.name}
+              </MenuItem>
+            ))}
+          </Select>
           <TextField
             focused
             required
@@ -102,28 +163,34 @@ function CreatCourse() {
             label="lesson file"
             type="file"
             variant="standard"
+            InputLabelProps={{ shrink: true }}
+            onChange={handleFileChange}
           />
 
           <TextField
             focused
             required
             margin="dense"
-            id="peda_file"
-            name="peda_file"
+            id="pedagogical_file"
+            name="pedagogical_file"
             label="pedagogique file"
             type="file"
             variant="standard"
+            InputLabelProps={{ shrink: true }}
+            onChange={handleFileChange}
           />
 
           <TextField
             focused
             required
             margin="dense"
-            id="exo_file"
-            name="exo_file"
-            label="Exercice file"
+            id="exercise_file"
+            name="exercise_file"
+            label="Exercise file"
             type="file"
             variant="standard"
+            InputLabelProps={{ shrink: true }}
+            onChange={handleFileChange}
           />
         </DialogContent>
         <DialogActions>

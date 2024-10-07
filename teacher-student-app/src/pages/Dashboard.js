@@ -21,7 +21,7 @@ import Quizzes from "../pages/Quizzes";
 
 function Dashboard() {
   const { user } = useContext(AuthContext);
-
+console.log(user)
   //if (!user) {
   //  return <Navigate to="/login" />;
   // }

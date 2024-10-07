@@ -26,21 +26,10 @@ import YourClasses from "./YourClasses";
 
 function Greetings() {
   const [open, setOpen] = useState(false);
-  const { user } = useContext(AuthContext);
-  const [classes, setClasses] = useState([]);
+  const { user, getClasses, classes } = useContext(AuthContext);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const getClasses = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/get_classes", {
-        withCredentials: true,
-      });
-      setClasses(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

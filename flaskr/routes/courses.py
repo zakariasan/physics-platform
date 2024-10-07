@@ -45,25 +45,50 @@ def create_class():
 @course_bp.route('/get_classes', methods=['GET'])
 @login_required
 def get_classes():
-    #classes = ClassName.query.all()
     classes = current_user.classes
     class_list = [classe.as_dict() for classe in classes]
     return jsonify(class_list), 200
 
 
-@ course_bp.route('/c_course', methods=['POST'])
+# Create Course
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt'}
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@ course_bp.route('/create_course', methods=['POST'])
+@login_required
 @ role_required(['teacher'])
 def create_course():
-    data = request.get_json()
+
+    if current_user.is_authenticated:
+        teacher_id = current_user.id
+    else:
+        return jsonify({'msg': 'not logged in babyy'})
+
+    data = request.form
+    files = request.files
+
+    unite_name = data.get('unite_name')
     title = data.get('title')
-    description = data.get('description')
-    teacher_id = data.get('teacher_id')
+    class_id = data.get('className')
 
-    if not title or not teacher_id:
-        return jsonify({'msg': 'Missing required fields'}), 400
+    # Handle file uploads
+    lesson_file = files.get('lesson_file')
+    pedagogical_file = files.get('pedagogical_file')
+    exercise_file = files.get('exercise_file')
 
-    new_course = Course(title=title, description=description,
-                        teacher_id=teacher_id)
+    if not unite_name or not title or not class_id:
+        return jsonify({'error': 'Missing data fields.'}), 400
+
+    new_course = Course(
+        unite_name=unite_name,
+        class_id=class_id,
+        teacher_id=teacher_id
+    )
     db.session.add(new_course)
     db.session.commit()
     return jsonify({'msg': 'Course created successfully'}), 201

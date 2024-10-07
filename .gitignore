@@ -1,0 +1,21 @@
+# React/Node.js specific
+node_modules/
+
+# Python specific
+__pycache__/
+*.py[cod]
+
+# Cache files
+.cache/
+
+# Ignore log files
+*.log
+
+# Ignore OS specific
+.DS_Store
+Thumbs.db
+
+# Lockfiles (optional)
+package-lock.json
+yarn.lock
+
