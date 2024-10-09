@@ -1,9 +1,12 @@
 # routes/c
-from flask import Blueprint, request, jsonify, session
+import os
+from flask import Blueprint, request, jsonify, current_app
 from models import db
 from models.Course import Course
+from models.Course import Lesson
 from models.Course import ClassName
 from middleware.decorators import role_required
+from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 course_bp = Blueprint('courses', __name__)
 
@@ -51,23 +54,21 @@ def get_classes():
 
 
 # Create Course
-UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt'}
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename\
+        .rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @ course_bp.route('/create_course', methods=['POST'])
-@login_required
-@ role_required(['teacher'])
 def create_course():
 
     if current_user.is_authenticated:
         teacher_id = current_user.id
     else:
-        return jsonify({'msg': 'not logged in babyy'})
+        return jsonify({'msg': 'not logged in please register'})
 
     data = request.form
     files = request.files
@@ -76,12 +77,8 @@ def create_course():
     title = data.get('title')
     class_id = data.get('className')
 
-    # Handle file uploads
-    lesson_file = files.get('lesson_file')
-    pedagogical_file = files.get('pedagogical_file')
-    exercise_file = files.get('exercise_file')
-
-    if not unite_name or not title or not class_id:
+    required_fields = ['unite_name', 'title', 'className']
+    if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing data fields.'}), 400
 
     new_course = Course(
@@ -89,9 +86,49 @@ def create_course():
         class_id=class_id,
         teacher_id=teacher_id
     )
+
     db.session.add(new_course)
-    db.session.commit()
-    return jsonify({'msg': 'Course created successfully'}), 201
+    db.session.flush()
+
+    new_lesson = Lesson(
+        title=title,
+        course_id=new_course.id,
+        teacher_id=teacher_id
+    )
+
+    db.session.add(new_lesson)
+    db.session.flush()
+
+    file_fields = ['lesson_file', 'pedagogical_file', 'exercise_file']
+
+    # Build the path for the course folder
+    upload_path = os.path.join(
+        current_app.config['UPLOAD_FOLDER'], f"course_{new_course.id}")
+
+    # Ensure the directory exists
+    os.makedirs(upload_path, exist_ok=True)
+    # creating folder
+    for field in file_fields:
+        file = files.get(field)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(upload_path, filename)
+            file.save(filepath)
+            setattr(new_lesson, field, filepath)
+
+    try:
+        db.session.commit()
+        return jsonify({
+            'msg': 'Course and lesson created successfully',
+            'course_id': new_course.id,
+            'lesson_id': new_lesson.id
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error creating course: {str(e)}")
+        return jsonify({
+            'error': 'An error occurred while creating the course'
+        }), 500
 
 
 @ course_bp.route('/courses', methods=['GET'])

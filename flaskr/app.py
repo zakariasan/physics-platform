@@ -10,6 +10,7 @@ from models.User import User
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app, supports_credentials=True)  # Enable CORS for the entire app
+app.config['UPLOAD_FOLDER'] = './uploads'  # Set the upload folder path
 
 # set up flask login`
 login_manager = LoginManager()

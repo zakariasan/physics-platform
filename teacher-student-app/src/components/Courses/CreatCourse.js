@@ -15,6 +15,7 @@ import { AuthContext } from "../context/AuthContext";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import axios from "axios";
 import React, { useContext, useState } from "react";
+
 /******************
  * CreateCourse: function to create a course.
  *
@@ -70,13 +71,12 @@ function CreatCourse() {
     console.log(key, value);
   }*/
     try {
-      const res = await axios.post("http://localhost:5000/creat_course", data, {
+      const res = await axios.post("http://localhost:5000/create_course", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      
       console.log(res.data);
     } catch (error) {
       console.error("Create course failed", error);
