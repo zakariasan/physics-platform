@@ -1,23 +1,18 @@
 # routes/user_routes
 
-from models import db
-from flask import Blueprint, request, jsonify, session, url_for, redirect
-from models.User import User
+
+from flaskr.models.User import User
+from flaskr.models import db
+from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-auth = Blueprint('auth', __name__)
+
+bp = Blueprint('auth', __name__)
 
 
-@auth.route('/check_auth')
-def check_auth():
-    if current_user.is_authenticated:
-        return jsonify(user={"username": current_user.username, "email": current_user.email})
-    return jsonify(user=None), 401
-
-
-@auth.route('/register', methods=['POST', 'GET'])
+@bp.route('/register', methods=['POST'])
 def register():
-    # register logic
+    """ User register """
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
@@ -46,8 +41,9 @@ def register():
     }), 201
 
 
-@auth.route('/login', methods=['POST'])
+@bp.route('/login', methods=['POST'])
 def login():
+    """ User login """
     # login logic part
     data = request.get_json()
     username = data.get('username')
@@ -72,9 +68,32 @@ def login():
     return ({'msg': 'Invalide User'}), 401
 
 
-@auth.route('/logout', methods=['POST'])
+@bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
+    """ User logout """
     # logout logi
     logout_user()
     return ({'msg': 'Logout successfully'}), 200
+
+
+@bp.route('/check_auth')
+def check_auth():
+    """ check user authentication """
+    if current_user.is_authenticated:
+        return jsonify(
+            user={
+                "username": current_user.username,
+                "email": current_user.email
+            })
+    return jsonify(user=None), 401
+
+
+@bp.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    return jsonify({
+        'username': current_user.username,
+        'email': current_user.email,
+        'role': current_user.role
+    })

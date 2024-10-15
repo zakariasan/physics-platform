@@ -27,10 +27,9 @@ console.log(user)
   // }
 
   return (
-    <Box sx={{ display: "flex", bgcolor: "primary", height: "100vh", p: 10 }}>
+    <Box sx={{ display: "flex", bgcolor: "primary", height: "100vh", p: 2, ml: 5 }}>
       <Sidebar elevation={30} />
       <Box sx={{flexGrow:1, p:3}}>
-      <Greetings />
       <Routes>
         <Route path="/" element={<Greetings />} />
         <Route path="/courses" element={<Courses />} />

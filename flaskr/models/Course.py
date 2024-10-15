@@ -1,6 +1,6 @@
 # models/Course.py
 from datetime import datetime
-from . import db
+from flaskr.models import db
 
 
 class ClassName(db.Model):

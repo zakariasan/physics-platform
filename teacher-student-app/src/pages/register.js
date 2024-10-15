@@ -7,7 +7,7 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  Card
+  Card,
 } from "@mui/material";
 import axios from "axios";
 
@@ -16,7 +16,7 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
-    role: "student", // or 'teacher'
+    role: "", // or 'teacher'
   });
 
   const handleChange = (e) => {
@@ -41,63 +41,65 @@ const Register = () => {
       // Handle registration failure
     }
   };
-
+console.log(formData)
   return (
     <Container maxWidth="sm">
-
-      <Card sx={{ p:2, mt: 10}}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Register
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-
-        <InputLabel id="role-user">role</InputLabel>
-        <Select
-          labelId="user-role"
-          id="role"
-          value={formData.role}
-          fullWidth
-          margin="normal"
-          label="role"
-          onChange={handleChange}
-        >
-          <MenuItem value="Student">Student</MenuItem>
-          <MenuItem value="Teacher">Teacher</MenuItem>
-        </Select>
-
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <Button variant="contained" color="primary" type="submit" fullWidth>
+      <Card sx={{ p: 2, mt: 10 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
           Register
-        </Button>
-      </form>
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+
+          <InputLabel id="role-user">role</InputLabel>
+          <Select
+            labelId="user-role"
+            id="role"
+            name='role'
+            value={formData.role}
+            fullWidth
+            margin="normal"
+            label="role"
+            onChange={handleChange}
+          >
+            <MenuItem value="Student">
+              Student
+            </MenuItem>
+            <MenuItem value="Teacher">Teacher</MenuItem>
+          </Select>
+
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <Button variant="contained" color="primary" type="submit" fullWidth>
+            Register
+          </Button>
+        </form>
       </Card>
     </Container>
   );
