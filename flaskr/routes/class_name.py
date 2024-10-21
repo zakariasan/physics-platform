@@ -8,6 +8,7 @@ bp = Blueprint('class_name', __name__)
 
 
 @bp.route('/creat_class', methods=['POST'])
+@role_required(['Teacher'])
 @login_required
 def create_class():
     """ create a new class """
@@ -30,6 +31,7 @@ def create_class():
 
 
 @bp.route('/get_classes', methods=['GET'])
+@role_required(['Teacher'])
 @login_required
 def get_classes():
     """ get all classes """
