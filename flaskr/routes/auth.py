@@ -1,13 +1,18 @@
-# routes/user_routes
-
-
 from flaskr.models.User import User
 from flaskr.models import db
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from werkzeug.security import generate_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
 
 bp = Blueprint('auth', __name__)
+
+
+def validate_fields(data, fields):
+    """ Ensure all required data before creating """
+    miss = [field for field in fields if field not in data]
+
+    if miss:
+        abort(400, description=f"Missing fields: {', '.join(miss)}")
 
 
 @bp.route('/register', methods=['POST'])
@@ -19,19 +24,17 @@ def register():
     role = data.get('role')
     password = data.get('password')
 
-    if not username or not email or not password or not role:
-        return jsonify({'msg': 'Missing infos'}), 400
+    validate_fields(data, ['username', 'email', 'role', 'password'])
 
     # check if user already exists
     user = User.query.filter_by(email=email).first()
     if user:
-        return ({'msg': 'User already exists'}), 400
+        return ({'msg': 'User already exists'}), 409
 
     # create a new one
     hash_pass = generate_password_hash(password)
     new_user = User(username=username, email=email,
                     password=hash_pass, role=role)
-    # hashing passwd here
 
     db.session.add(new_user)
     db.session.commit()
@@ -49,9 +52,8 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    if not username or not password:
-        return jsonify({'msg': 'Missing infos'}), 400
-    # check if user already exists
+    validate_fields(data, ['username', 'password'])
+
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         login_user(user)
@@ -85,8 +87,8 @@ def check_auth():
             user={
                 "username": current_user.username,
                 "email": current_user.email
-            })
-    return jsonify(user=None), 401
+            }), 200
+    return jsonify({'user': None}), 401
 
 
 @bp.route('/profile', methods=['GET'])
@@ -96,4 +98,4 @@ def profile():
         'username': current_user.username,
         'email': current_user.email,
         'role': current_user.role
-    })
+    }), 200
