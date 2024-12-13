@@ -37,6 +37,21 @@ const theme = createTheme({
       dark: "#423e56",
       contrastText: "#fff",
     },
+    pinkT: {
+      main: "#b6a1e2",
+      light: "#f19fd9",
+      dark: "#d991c3",
+      contrastText: "#120D2A",
+    },
+    macroni: {
+      main: "#ffb595",
+      light: "#f7c5b0",
+      dark: "#c95626",
+      contrastText: "#120D2A",
+    },
+    caryola: {
+      main: "#ffd475",
+    }
   },
 });
 

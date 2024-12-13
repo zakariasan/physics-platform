@@ -44,7 +44,7 @@ def get_classes():
 
 
 @bp.route('/delete_class/<int:class_id>', methods=['DELETE'])
-@role_required(['teacher'])
+@role_required(['Teacher'])
 @login_required
 def delete_class(class_id):
     """ delete a class """
@@ -65,7 +65,7 @@ def delete_class(class_id):
 
 
 @bp.route('/update_class/<int:class_id>', methods=['PUT'])
-@role_required(['teacher'])
+@role_required(['Teacher'])
 @login_required
 def update_class(class_id):
     """ update a class """

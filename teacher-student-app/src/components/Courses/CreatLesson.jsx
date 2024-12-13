@@ -31,7 +31,6 @@ function CreatCourse() {
     level: "",
   });
 
-  console.log(formData)
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 

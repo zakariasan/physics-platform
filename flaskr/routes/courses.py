@@ -37,25 +37,68 @@ def create_course():
     files = request.files
 
     unite_name = data.get('unite_name')
-    title = data.get('title')
-    class_id = data.get('className')
+    domaine = data.get('domaine')
+    description = data.get('description')
+    level = data.get('level')
+    classID = data.get('classID')
 
-    required_fields = ['unite_name', 'title', 'className']
+    required_fields = [
+        'domaine',
+        'description',
+        'unite_name',
+        'level',
+        'classID'
+    ]
     if not all(field in data for field in required_fields):
         return jsonify({'error': 'Missing data fields.'}), 400
 
     new_course = Course(
+        domaine=domaine,
         unite_name=unite_name,
-        class_id=class_id,
+        description=description,
+        level=level,
+        className=classID,
         teacher_id=teacher_id
     )
 
     db.session.add(new_course)
     db.session.flush()
+    try:
+        db.session.commit()
+        return jsonify({
+            'msg': 'Course and lesson created successfully',
+            'course_id': new_course.id,
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"Error creating course: {str(e)}")
+        return jsonify({
+            'error': 'An error occurred while creating the course'
+        }), 500
+
+
+@bp.route('/create_lesson', methods=['POST'])
+def create_lesson():
+    """ Creat course """
+    if current_user.is_authenticated:
+        teacher_id = current_user.id
+    else:
+        return jsonify({'msg': 'not logged in please register'})
+
+    data = request.form
+    files = request.files
+
+    title = data.get('title')
+
+    required_fields = [
+        'title',
+    ]
+    if not all(field in data for field in required_fields):
+        return jsonify({'error': 'Missing data fields.'}), 400
 
     new_lesson = Lesson(
         title=title,
-        course_id=new_course.id,
+        # course_id=new_course.id,
         teacher_id=teacher_id
     )
 
@@ -64,6 +107,8 @@ def create_course():
 
     file_fields = ['lesson_file', 'pedagogical_file', 'exercise_file']
 
+
+'''
     # Build the path for the course folder
     upload_path = os.path.join(
         current_app.config['UPLOAD_FOLDER'], f"course_{new_course.id}")
@@ -78,7 +123,6 @@ def create_course():
             filepath = os.path.join(upload_path, filename)
             file.save(filepath)
             setattr(new_lesson, field, filepath)
-
     try:
         db.session.commit()
         return jsonify({
@@ -92,6 +136,7 @@ def create_course():
         return jsonify({
             'error': 'An error occurred while creating the course'
         }), 500
+'''
 
 
 @bp.route('/courses', methods=['GET'])

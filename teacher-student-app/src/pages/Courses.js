@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import CreatCourse from "../components/Courses/CreatCourse";
-
+import ViewCourse from '../components/Courses/ViewCourse'
 /*********************************
  * Courses: function in dashboard
  *
@@ -14,7 +14,7 @@ function Courses() {
         component="h4"
         sx={{ fontWeight: "bold", mb: 2 }}
       >
-        Courses Management
+        Materials Management
       </Typography>
 
       <CreatCourse />
@@ -24,10 +24,11 @@ function Courses() {
         component="h4"
         sx={{ fontWeight: "bold", mb: 2 }}
       >
-        All Courses:
+        All Materials:
       </Typography>
 
       <h1>Course Management</h1>
+      <ViewCourse />
       <p>
         View Courses:List of all the courses the teacher has created. Each
         course should show the title, a brief description, and options to manage
